@@ -86,64 +86,52 @@ class App extends React.Component {
     }
 }
 
+
 class Grap extends React.Component {
   constructor(props) {
     super(props)
   }
 
-  render() {
-    const data = [
-      { name: 'Jan', value: 40 },
-      { name: 'Feb', value: 35 },
-      { name: 'Mar', value: 4 },
-      { name: 'Apr', value: 28 },
-      { name: 'May', value: 15 },
-    ];
+  
 
-    const getX = d3.scaleBand()
-  .domain(['Jan', 'Feb', 'Mar', 'Apr', 'May'])
-  .range([0, 600]);
+  render() {
+
+    let data = []
+    for(let i = -3; i < 5; i++)
+      data.push(i * i)
+
+    const getX = d3.scaleLinear()
+  .domain([0, 30])
+  .range([0, 300]);
 
   const getY = d3.scaleLinear()
-  .domain([0, 40])
+  .domain([0, 25])
   .range([300, 0]);
 
-  const linePath = d3
-  .line()
-  .x(d => getX(d.name) + getX.bandwidth() / 2)
-  .y(d => getY(d.value))
-  .curve(d3.curveMonotoneX)(data);
+  for(let i = 0; i < data.length; i++)
+    console.log(i, getX(i), getY(data[i]))
+
+  var renderPoints = () => {
+    let result = []
+    for(let i = 0; i < data.length; i++) {
+      result.push(
+        <circle
+          key={i}
+          cx={getX(i) + 150}
+          cy={getY(data[i])}
+          r={4}
+          fill="#f00"
+        />
+      )
+      
+    }
+    return result
+  }
     
     return (
-      <svg width={600} height={300}>
-        {data.map((item, index) => {
-          return (
-            <g key={index}>
-              <circle
-                key={index}
-                cx={getX(item.name) + getX.bandwidth() / 2}
-                cy={getY(item.value)}
-                r={4}
-                fill="#7cb5ec"
-              />
-              <text
-            fill="#666"
-            x={getX(item.name) + getX.bandwidth() / 2}
-            y={getY(item.value) - 10}
-            textAnchor="middle"
-          >
-            {item.value}
-          </text>
-            </g>
-          );
-        })}
+      <svg width={300} height={300}>
+        {renderPoints()}
         
-        <path
-      strokeWidth={3}
-      fill="none"
-      stroke="#7cb5ec"
-      d={linePath}
-    />
       </svg>
     );
   }
