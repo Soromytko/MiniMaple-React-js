@@ -86,8 +86,71 @@ class App extends React.Component {
     }
 }
 
+class Grap extends React.Component {
+  constructor(props) {
+    super(props)
+  }
 
-ReactDOM.render(<App/>, document.querySelector("#root"))
+  render() {
+    const data = [
+      { name: 'Jan', value: 40 },
+      { name: 'Feb', value: 35 },
+      { name: 'Mar', value: 4 },
+      { name: 'Apr', value: 28 },
+      { name: 'May', value: 15 },
+    ];
+
+    const getX = d3.scaleBand()
+  .domain(['Jan', 'Feb', 'Mar', 'Apr', 'May'])
+  .range([0, 600]);
+
+  const getY = d3.scaleLinear()
+  .domain([0, 40])
+  .range([300, 0]);
+
+  const linePath = d3
+  .line()
+  .x(d => getX(d.name) + getX.bandwidth() / 2)
+  .y(d => getY(d.value))
+  .curve(d3.curveMonotoneX)(data);
+    
+    return (
+      <svg width={600} height={300}>
+        {data.map((item, index) => {
+          return (
+            <g key={index}>
+              <circle
+                key={index}
+                cx={getX(item.name) + getX.bandwidth() / 2}
+                cy={getY(item.value)}
+                r={4}
+                fill="#7cb5ec"
+              />
+              <text
+            fill="#666"
+            x={getX(item.name) + getX.bandwidth() / 2}
+            y={getY(item.value) - 10}
+            textAnchor="middle"
+          >
+            {item.value}
+          </text>
+            </g>
+          );
+        })}
+        
+        <path
+      strokeWidth={3}
+      fill="none"
+      stroke="#7cb5ec"
+      d={linePath}
+    />
+      </svg>
+    );
+  }
+}
+
+// ReactDOM.render(<App/>, document.querySelector("#root"))
+ReactDOM.render(<Grap/>, document.querySelector("#root"))
 
 
 
