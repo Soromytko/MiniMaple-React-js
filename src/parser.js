@@ -1,3 +1,4 @@
+import { thresholdFreedmanDiaconis, tickStep } from "d3"
 import {Token} from "./token"
 
 export class Parser {
@@ -15,11 +16,14 @@ export class Parser {
   }
 
   parse() {
-    this.stream = this.stream.replace(/\s/g, '')  //replace spaces
-    if(this.stream.length == 0) {
+    // remove spaces
+    this.stream = this.stream.replace(/\s/g, '')
+
+    if (this.stream.length == 0) {
       this.log += 'empty'
       return
     }
+
     while (this.i < this.stream.length) {
       if (this.parseNumber()) {
         this.tokens.push(new Token('number', this.currentParseValue))
@@ -28,14 +32,40 @@ export class Parser {
       } else if (this.parseParameter()) {
         this.tokens.push(new Token('parameter', this.currentParseValue))
       } else {
-        this.log += "unknown: " + this.currentChar
+        this.log += 'unknown: ' + '\"' + this.currentChar + '\"'
         return
       }
     }
 
-    // this.tokens.forEach((token) => {
-    //   console.log(token.type, token.lexeme)
-    // })
+    this.analyse()
+  }
+
+  // semantic analysis
+  analyse() {
+    Array.prototype.insert = function ( index, ...items ) {
+      this.splice( index, 0, ...items );
+    };
+
+    // insert "*" before/after "x"
+    for (let i = 0; i < this.tokens.length; i++) {
+      if (this.tokens[i].type == 'parameter') {
+        if (i > 0 && this.tokens[i - 1].type != 'operator') {
+          this.tokens.insert(i, new Token('operator', '*'))
+        } else if (i + 1 < this.tokens.length && this.tokens[i + 1].type != 'operator') {
+          this.tokens.insert(i + 1, new Token('operator', '*'))
+        }
+      }
+    }
+
+    // check operators
+    for (let i = 0; i < this.tokens.length; i++) {
+      if (this.tokens[i].type == 'operator') {
+        if (i + 1 == this.tokens.length || this.tokens[i + 1].type == 'operator') {
+          this.log += 'an operand is required after ' +  '\"' +this.tokens[i].lexeme + '\"'
+          return
+        }
+      }
+    }
   }
 
   parseNumber() {
@@ -72,25 +102,11 @@ export class Parser {
 
   inc() {
     this.i++
-    if(this.i < this.stream.length) {
+    if (this.i < this.stream.length) {
       this.currentChar = this.stream[this.i]
       return true
     }
     return false
   }
-
-  // splitBy(lexeme) {
-  //   let result = new Array()
-  //   result.push(new Array())
-  //   for(let i = 0; i < this.tokens.length; i++) {
-  //     if (this.tokens[i].lexeme == lexeme) {
-  //       result.push(new Array())
-  //       continue
-  //     }
-  //     result[result.length-1].push(this.tokens[i])
-  //   }
-  // }
-
-  
 
 }

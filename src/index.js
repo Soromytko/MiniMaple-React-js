@@ -45,21 +45,21 @@ class App extends React.Component {
 
       this.setState({parseResult: parser.log})
 
-      if (parser.log) {
+      if (!parser.log) {
+        let calculator = new Calculator(parser.tokens)
+        calculator.calc(2)
+      
+        this.xData = []
+        this.yData = []
+        for (let i = -10; i <= 10; i++) {
+          this.xData.push(i)
+          let y = calculator.calc(i)
+          this.yData.push(y)
+        }
 
       }
 
-      // var terms  = func.split('+')
-      // console.log(terms )
-
-    // terms.forEach((item) => {
-    //   console.log(item)
-    // })
-      
       this.setState({diffFunc: event.target.value})
-
-
-      
     }
 
     onDiffFuncHandleChange(event) {
