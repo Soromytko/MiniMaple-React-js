@@ -89,9 +89,9 @@ class App extends React.Component {
             </div>
             <div>
               <label>f'(x) = {this.state.diffFunc}</label>
-              <button onClick={this.onAddHandle}>
+              {/* <button onClick={this.onAddHandle}>
                 Добавить
-              </button>
+              </button> */}
             </div>
             {/* <div>
               <input type="number" value={this.state.from} onChange={this.}></input>
