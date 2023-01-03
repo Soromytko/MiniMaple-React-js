@@ -8,6 +8,7 @@ import * as d3 from "d3";
 import {Parser} from "./parser.js"
 import {Token} from "./token.js"
 import {Calculator} from "./calculator.js"
+import {Graph} from "./graph.js"
 
 class App extends React.Component {
     constructor(props) {
@@ -17,6 +18,8 @@ class App extends React.Component {
           inputFunc: '3x^2 + 1',
           diffFunc: '6x',
           parseResult: '',
+          xMin: '-10',
+          xMax: '10',
           buttonClick: false
         };
 
@@ -33,12 +36,16 @@ class App extends React.Component {
 
         this.inputFuncHandleChange = this.onInputFuncHandleChange.bind(this)
         this.diffFuncHandleChange = this.onDiffFuncHandleChange.bind(this)
+        this.xMinHandleChange = this.onXMinHandleChange.bind(this)
+        this.xMaxHandleChange = this.onXMaxHandleChange.bind(this)
 
         this.onAddHandle = this.onAdd.bind(this)
     }
 
     onInputFuncHandleChange(event) {
       this.setState({inputFunc: event.target.value})
+      this.rebuild(event.target.value, this.state.xMin, this.state.xMax)
+      return
 
       let parser = new Parser(event.target.value)
       parser.parse()
@@ -47,11 +54,10 @@ class App extends React.Component {
 
       if (!parser.log) {
         let calculator = new Calculator(parser.tokens)
-        calculator.calc(2)
       
         this.xData = []
         this.yData = []
-        for (let i = -10; i <= 10; i++) {
+        for (let i = this.state.xMin; i <= this.state.xMax; i++) {
           this.xData.push(i)
           let y = calculator.calc(i)
           this.yData.push(y)
@@ -66,6 +72,18 @@ class App extends React.Component {
       this.setState({diffFunc: event.target.value})
     }
 
+    onXMinHandleChange(event) {
+      this.setState({xMin: event.target.value})
+      this.rebuild(this.state.inputFunc, event.target.value, this.state.xMax)
+    }
+
+    onXMaxHandleChange(event) {
+      this.setState({xMax: event.target.value})
+      this.rebuild(this.state.inputFunc, this.state.xMin, event.target.value)
+
+
+    }
+
     onAdd() {
       this.setState({buttonClick: !this.state.buttonClick})
       let parser = new Parser(this.state.inputFunc)
@@ -76,45 +94,76 @@ class App extends React.Component {
       calculator.calc(0)
     }
 
+    rebuild(func, xMin, xMax) {
+      let parser = new Parser(func)
+      parser.parse()
+
+      this.setState({parseResult: parser.log})
+
+      if (!parser.log) {
+        let calculator = new Calculator(parser.tokens)
+      
+        this.xData = []
+        this.yData = []
+        for (let i = xMin; i <= xMax; i++) {
+          this.xData.push(i)
+          let y = calculator.calc(i)
+          this.yData.push(y)
+        }
+
+      }
+
+      this.setState({diffFunc: func})
+    }
+
     render() {
-        return (
+      // this.xData = [0, 1, 2, 3, 4]
+      // this.yData = [0, 1, 4, 9, 16]
+      return (
+        <div>
           <div>
-            <div>
-              <label>f(x) = </label>
-              <input type="text" value={this.state.inputFunc} onChange={this.inputFuncHandleChange}/>
-              <label>   </label>
-              <label style={{color: this.state.parseResult == 0 ? 'green' : 'red'}}>
-                {this.state.parseResult == 0 ? "correct" : this.state.parseResult}
-              </label>
-            </div>
-            <div>
-              <label>f'(x) = {this.state.diffFunc}</label>
-              {/* <button onClick={this.onAddHandle}>
-                Добавить
-              </button> */}
-            </div>
-            {/* <div>
-              <input type="number" value={this.state.from} onChange={this.}></input>
-            </div> */}
-            <table>
-              <tbody>
-                <tr>
-                  <th>x:</th>
-                  {this.renderTableData(this.xData)}
-                </tr>
-                <tr>
-                  <th>y:</th>
-                  {this.renderTableData(this.yData)}
-                </tr>
-              </tbody>
-          </table>
+            <label>f(x) = </label>
+            <input type="text" value={this.state.inputFunc} onChange={this.inputFuncHandleChange}/>
+            <label>   </label>
+            <label style={{color: this.state.parseResult == 0 ? 'green' : 'red'}}>
+              {this.state.parseResult == 0 ? "correct" : this.state.parseResult}
+            </label>
           </div>
-        )
+          <div>
+            <label>f'(x) = {this.state.diffFunc}</label>
+            {/* <button onClick={this.onAddHandle}>
+              Добавить
+            </button> */}
+          </div>
+          {/* <div>
+            <input type="number" value={this.state.from} onChange={this.}></input>
+          </div> */}
+            <label>interval: 
+              [ <input type="number" value={this.state.xMin} onChange={this.xMinHandleChange}/>, 
+              <input type="number" value={this.state.xMax} onChange={this.xMaxHandleChange}/> ]
+            </label>
+          <table>
+            <tbody>
+              <tr>
+                <th>x:</th>
+                {this.renderTableData(this.xData)}
+              </tr>
+              <tr>
+                <th>y:</th>
+                {this.renderTableData(this.yData)}
+              </tr>
+            </tbody>
+        </table>
+        <div>
+          <Graph xData={this.xData} yData={this.yData}></Graph>
+        </div>
+        </div>
+      )
     }
 }
 
 
-class Grap extends React.Component {
+class Grap_old extends React.Component {
   constructor(props) {
     super(props)
   }
