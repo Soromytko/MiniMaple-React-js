@@ -1,9 +1,4 @@
-export class Token {
-  constructor(type, value) {
-    this.type = type
-    this.value = value
-  }
-}
+import {Token} from "./token"
 
 export class Parser {
   constructor(stream) {
@@ -39,7 +34,7 @@ export class Parser {
     }
 
     // this.tokens.forEach((token) => {
-    //   console.log(token.type, token.value)
+    //   console.log(token.type, token.lexeme)
     // })
   }
 
@@ -57,7 +52,7 @@ export class Parser {
 
   parseOperator() {
     switch (this.currentChar) {
-      case '-': case '+': {
+      case '+': case '-': case '*': case '/': {
         this.currentParseValue = this.currentChar
         this.inc()
         return true
@@ -83,5 +78,19 @@ export class Parser {
     }
     return false
   }
+
+  // splitBy(lexeme) {
+  //   let result = new Array()
+  //   result.push(new Array())
+  //   for(let i = 0; i < this.tokens.length; i++) {
+  //     if (this.tokens[i].lexeme == lexeme) {
+  //       result.push(new Array())
+  //       continue
+  //     }
+  //     result[result.length-1].push(this.tokens[i])
+  //   }
+  // }
+
+  
 
 }

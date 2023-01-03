@@ -6,7 +6,8 @@ import ReactDOM from "react-dom";
 import * as d3 from "d3";
 
 import {Parser} from "./parser.js"
-import {Token} from "./parser.js"
+import {Token} from "./token.js"
+import {Calculator} from "./calculator.js"
 
 class App extends React.Component {
     constructor(props) {
@@ -18,6 +19,17 @@ class App extends React.Component {
           parseResult: '',
           buttonClick: false
         };
+
+        this.xData = [-1, 0, 1]
+        this.yData = [-33, 243463, 3423]
+
+        this.renderTableData = (data) => {
+          let result = []
+          for(let i = 0; i < data.length; i++) {
+            result.push(<td key={i}>{data[i]}</td>)
+          }
+          return result
+        }
 
         this.inputFuncHandleChange = this.onInputFuncHandleChange.bind(this)
         this.diffFuncHandleChange = this.onDiffFuncHandleChange.bind(this)
@@ -59,6 +71,9 @@ class App extends React.Component {
       let parser = new Parser(this.state.inputFunc)
       parser.parse()
       this.setState({parseResult: parser.log})
+
+      let calculator = new Calculator(parser.tokens)
+      calculator.calc(0)
     }
 
     render() {
@@ -82,37 +97,17 @@ class App extends React.Component {
               <input type="number" value={this.state.from} onChange={this.}></input>
             </div> */}
             <table>
-              <thead>
-                <tr>
-                  <th>Firstname</th>
-                  <th>Lastname</th>
-                </tr>
-              </thead>
               <tbody>
                 <tr>
-                  <th>Jill</th>
-                  <td>Smith</td>
+                  <th>x:</th>
+                  {this.renderTableData(this.xData)}
                 </tr>
                 <tr>
-                  <td>Eve</td>
-                  <td>Jackson</td>
+                  <th>y:</th>
+                  {this.renderTableData(this.yData)}
                 </tr>
               </tbody>
           </table>
-
-            {/* <div>
-              <label>x</label>
-              <label>-1</label>
-              <label>0</label>
-              <label>1</label>
-            </div>
-            <div>
-              <label>y</label>
-              <label>7</label>
-              <label>7</label>
-            </div> */}
-
-
           </div>
         )
     }
