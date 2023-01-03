@@ -81,6 +81,38 @@ class App extends React.Component {
             {/* <div>
               <input type="number" value={this.state.from} onChange={this.}></input>
             </div> */}
+            <table>
+              <thead>
+                <tr>
+                  <th>Firstname</th>
+                  <th>Lastname</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th>Jill</th>
+                  <td>Smith</td>
+                </tr>
+                <tr>
+                  <td>Eve</td>
+                  <td>Jackson</td>
+                </tr>
+              </tbody>
+          </table>
+
+            {/* <div>
+              <label>x</label>
+              <label>-1</label>
+              <label>0</label>
+              <label>1</label>
+            </div>
+            <div>
+              <label>y</label>
+              <label>7</label>
+              <label>7</label>
+            </div> */}
+
+
           </div>
         )
     }
@@ -137,8 +169,8 @@ class Grap extends React.Component {
   }
 }
 
-// ReactDOM.render(<App/>, document.querySelector("#root"))
-ReactDOM.render(<Grap/>, document.querySelector("#root"))
+ReactDOM.render(<App/>, document.querySelector("#root"))
+// ReactDOM.render(<Grap/>, document.querySelector("#root"))
 
 
 
