@@ -8,7 +8,7 @@ export class Calculator {
             '+': 0,
             '-': 0,
             '*': 1,
-            '/': 1
+            '/': 1 
           }
     }
 
@@ -19,7 +19,7 @@ export class Calculator {
       let operators = [] // stack
       let operate = () => {
         let opr1 = numbers.pop()
-        let opr2 = numbers.pop()
+        let opr2 = numbers.length ? numbers.pop() : 0
         let op = operators.pop()
         switch (op) {
           case '+': return opr2 + opr1
