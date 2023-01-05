@@ -37,13 +37,22 @@ export class Calculator {
         } else if (token.type == 'parameter') {
           numbers.push(Number(x))
           // console.log("push parameter", token.lexeme, "size =", numbers.length)
-        } else if(token.type == 'operator') {
-          while (this.priorities[operators[operators.length - 1]] >= this.priorities[token.lexeme]) { //while
-            let opppp = operate()
-            numbers.push(opppp)
-            // console.log("push number with operate", opppp, "size =", numbers.length)
+        } else if (token.type == 'operator') {
+          if (token.lexeme == ')') {
+            while (operators[operators.length - 1] != '(') {
+              numbers.push(operate())
+            }
+            operators.pop() //remove "("
+          } else {
+            if (token.lexeme != '(') {
+              while (this.priorities[operators[operators.length - 1]] >= this.priorities[token.lexeme]) { //while
+                let opppp = operate()
+                numbers.push(opppp)
+                // console.log("push number with operate", opppp, "size =", numbers.length)
+              }
+            }
+            operators.push(token.lexeme)
           }
-          operators.push(token.lexeme)
           // console.log("push operator", token.lexeme, "size =", operators.length)
   
         }
@@ -54,7 +63,7 @@ export class Calculator {
         numbers.push(opppp)
         // console.log("finish", opppp, "size =", numbers.length)
       }
-  
+
       return numbers.pop()
       
   }

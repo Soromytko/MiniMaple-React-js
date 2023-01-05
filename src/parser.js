@@ -1,4 +1,5 @@
 import { thresholdFreedmanDiaconis, tickStep } from "d3"
+import { isGeneratorFunction } from "util/types"
 import {Token} from "./token"
 
 export class Parser {
@@ -40,30 +41,70 @@ export class Parser {
     this.analyse()
   }
 
+  /* return explicit string
+  3 (5x+ 2) - implicit
+  3*(5*x+2) - explicit */
+  getExplicit() {
+    let result = ''
+    this.tokens.forEach(token => {
+      result += token.lexeme
+    })
+    return result
+  }
+
   // semantic analysis
   analyse() {
     Array.prototype.insert = function ( index, ...items ) {
       this.splice( index, 0, ...items );
     };
 
-    // insert "*" before/after "x"
+    let isParenthesis = (token) => token.lexeme == '(' || token.lexeme == ')'
+ 
+    // insert "*" before/after "x", before "(", after ")"
     for (let i = 0; i < this.tokens.length; i++) {
-      if (this.tokens[i].type == 'parameter') {
-        if (i > 0 && this.tokens[i - 1].type != 'operator') {
-          this.tokens.insert(i, new Token('operator', '*'))
-        } else if (i + 1 < this.tokens.length && this.tokens[i + 1].type != 'operator') {
-          this.tokens.insert(i + 1, new Token('operator', '*'))
-        }
+
+      let isInsertBefore = this.tokens[i].type == 'parameter' || this.tokens[i].lexeme == '('
+      let isInsertAfter = this.tokens[i].type == 'parameter' || this.tokens[i].lexeme == ')'
+
+      if (isInsertBefore && i > 0 && this.tokens[i - 1].type != 'operator') {
+        this.tokens.insert(i, new Token('operator', '*'))
+        i++
+      }
+      if (isInsertAfter && i + 1 < this.tokens.length && this.tokens[i + 1].type != 'operator') {
+        this.tokens.insert(i + 1, new Token('operator', '*'))
+        i++
       }
     }
 
     // check operators
     for (let i = 0; i < this.tokens.length; i++) {
-      if (this.tokens[i].type == 'operator') {
-        if (i + 1 == this.tokens.length || this.tokens[i + 1].type == 'operator') {
-          this.log += 'an operand is required after ' +  '\"' +this.tokens[i].lexeme + '\"'
+      if (this.tokens[i].type == 'operator' && !isParenthesis(this.tokens[i])) {
+        if (i + 1 == this.tokens.length || this.tokens[i + 1].type == 'operator' && this.tokens[i + 1].lexeme != '(') {
+          this.log += 'an operand is required after ' +  '\"' + this.tokens[i].lexeme + '\"'
           return
         }
+      }
+    }
+
+    //check pairs of parentheses
+    let right = this.tokens.length - 1
+    for (let left = 0; left <= right; left++) {
+      if (this.tokens[left].lexeme == '(') {
+        let isFound = false
+        for (; right > left; right--) {
+          if (this.tokens[right].lexeme == ')') {
+            isFound = true
+            right--
+            break
+          }
+        }
+        if (!isFound) {
+          this.log += 'requires' + '\"' + ")" + '\"'
+          return
+        }
+      } else if (this.tokens[left].lexeme == ')') {
+        this.log += 'requires' + '\"' + "(" + '\"'
+        return
       }
     }
   }
@@ -82,7 +123,8 @@ export class Parser {
 
   parseOperator() {
     switch (this.currentChar) {
-      case '+': case '-': case '*': case '/': {
+      case '+': case '-': case '*': case '/':
+      case '(' : case ')': {
         this.currentParseValue = this.currentChar
         this.inc()
         return true

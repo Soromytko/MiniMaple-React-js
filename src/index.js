@@ -16,6 +16,7 @@ class App extends React.Component {
 
         this.state = {
           inputFunc: '3x^2 + 1',
+          explicitFunc: '3',
           diffFunc: '6x',
           parseResult: '',
           xMin: '-10',
@@ -99,8 +100,10 @@ class App extends React.Component {
       parser.parse()
 
       this.setState({parseResult: parser.log})
+      this.setState({explicitFunc: parser.getExplicit()})
 
       if (!parser.log) {
+        
         let calculator = new Calculator(parser.tokens)
       
         this.xData = []
@@ -130,7 +133,8 @@ class App extends React.Component {
             </label>
           </div>
           <div>
-            <label>f'(x) = {this.state.diffFunc}</label>
+            {/* <label>f'(x) = {this.state.diffFunc}</label> */}
+            <label>f(x) = {this.state.explicitFunc}</label>
             {/* <button onClick={this.onAddHandle}>
               Добавить
             </button> */}
