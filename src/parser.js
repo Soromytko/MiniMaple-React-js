@@ -59,7 +59,16 @@ export class Parser {
     };
 
     let isParenthesis = (token) => token.lexeme == '(' || token.lexeme == ')'
- 
+
+    //remove "()"
+    for (let i = 0; i < this.tokens.length; i++) {
+      if (this.tokens[i].lexeme == '(' && i + 1 < this.tokens.length && this.tokens[i + 1].lexeme == ')') {
+        this.tokens.splice(i, 1)
+        this.tokens.splice(i, 1)
+        i--
+      }
+    }
+
     // insert "*" before/after "x", before "(", after ")"
     for (let i = 0; i < this.tokens.length; i++) {
       let isInsertBefore = this.tokens[i].type == 'parameter' || this.tokens[i].lexeme == '('
@@ -73,6 +82,18 @@ export class Parser {
       if (isInsertAfter && i + 1 < this.tokens.length && this.tokens[i + 1].type != 'operator') {
         this.tokens.insert(i + 1, new Token('operator', '*'))
         i++
+      }
+    }
+
+    //insert "0" before "+", "-", "*", "/"
+    for (let i = 0; i < this.tokens.length; i++) {
+      if (this.tokens[i].type == 'operator' &&
+          this.tokens[i].lexeme == '+' || this.tokens[i].lexeme == '-' ||
+          this.tokens[i].lexeme == '*' || this.tokens[i].lexeme == '/') {
+        if (i - 1 < 0 || isParenthesis(this.tokens[i - 1])) {
+          this.tokens.insert(i, new Token('number', '0'))
+          i++
+        }
       }
     }
 
@@ -108,6 +129,7 @@ export class Parser {
       this.log += 'requires' + '\"' + ")" + '\"'
       return
     }
+    
   }
 
   parseNumber() {
