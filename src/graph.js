@@ -40,17 +40,17 @@ export class Graph extends React.Component {
 
   replaceInfinity() {
 
-    let isMinInf = this.props.yData.includes(-Infinity)
-    let isMaxInf = this.props.yData.includes(Infinity)
+    let hasMinInf = this.props.yData.includes(-Infinity)
+    let hasMaxInf = this.props.yData.includes(Infinity)
 
-    if (isMinInf || isMaxInf) {
+    if (hasMinInf || hasMaxInf) {
       let unique = this.props.yData
         .unique()
         .remove(-Infinity)
         .remove(Infinity)
 
-      let min = unique.min() * 2
-      let max = unique.max() * 2
+      let min = unique.length ? unique.min() * 2 : 0
+      let max = unique.length ? unique.max() * 2 : 0
 
       this.props.yData
         .replace(-Infinity, min)
