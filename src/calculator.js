@@ -1,5 +1,9 @@
 import {Token} from "./token.js"
 
+Math.toRadians = function(degrees) {
+  return degrees * Math.PI / 180;
+};
+
 export class Calculator {
     constructor(tokens) {
         this.tokens = tokens
@@ -8,7 +12,11 @@ export class Calculator {
             '+': 0,
             '-': 0,
             '*': 1,
-            '/': 1 
+            '/': 1 ,
+            '^': 2,
+            'sin': 2,
+            'cos': 2,
+            'tan': 2,
           }
     }
 
@@ -18,14 +26,17 @@ export class Calculator {
       let numbers = [] // stack
       let operators = [] // stack
       let operate = () => {
-        let opr1 = numbers.pop()
-        let opr2 = numbers.length ? numbers.pop() : 0
-        let op = operators.pop()
-        switch (op) {
-          case '+': return opr2 + opr1
-          case '-': return opr2 - opr1
-          case '*': return opr2 * opr1
-          case '/': return opr2 / opr1
+        let operand1 = numbers.pop()
+        let getOperand2 = () => numbers.length ? numbers.pop() : 0
+        switch (operators.pop()) {
+          case '+': return getOperand2() + operand1
+          case '-': return getOperand2() - operand1
+          case '*': return getOperand2() * operand1
+          case '/': return getOperand2() / operand1
+          case '^': return Math.pow(getOperand2(), operand1)
+          case 'sin': return Math.sin(operand1)
+          case 'cos': return Math.cos(operand1)
+          case 'tan': return Math.tan(operand1)
         }
       }
   

@@ -42,7 +42,7 @@ export class Parser {
   }
 
   /* return explicit string
-  3 (5x+ 2) - implicit
+  3(5x+ 2) - implicit
   3*(5*x+2) - explicit */
   getExplicit() {
     let result = ''
@@ -62,24 +62,28 @@ export class Parser {
  
     // insert "*" before/after "x", before "(", after ")"
     for (let i = 0; i < this.tokens.length; i++) {
-
       let isInsertBefore = this.tokens[i].type == 'parameter' || this.tokens[i].lexeme == '('
       let isInsertAfter = this.tokens[i].type == 'parameter' || this.tokens[i].lexeme == ')'
-
+      
       if (isInsertBefore && i > 0 && this.tokens[i - 1].type != 'operator') {
         this.tokens.insert(i, new Token('operator', '*'))
         i++
       }
+
       if (isInsertAfter && i + 1 < this.tokens.length && this.tokens[i + 1].type != 'operator') {
         this.tokens.insert(i + 1, new Token('operator', '*'))
         i++
       }
     }
 
+    let isException = (token) => {
+      return token.lexeme == '(' || token.lexeme == 'sin' ||
+      token.lexeme == 'cos'
+    }
     // check operators
     for (let i = 0; i < this.tokens.length; i++) {
       if (this.tokens[i].type == 'operator' && !isParenthesis(this.tokens[i])) {
-        if (i + 1 == this.tokens.length || this.tokens[i + 1].type == 'operator' && this.tokens[i + 1].lexeme != '(') {
+        if (i + 1 == this.tokens.length || this.tokens[i + 1].type == 'operator' && !isException(this.tokens[i + 1])) {
           this.log += 'an operand is required after ' +  '\"' + this.tokens[i].lexeme + '\"'
           return
         }
@@ -124,12 +128,21 @@ export class Parser {
   parseOperator() {
     switch (this.currentChar) {
       case '+': case '-': case '*': case '/':
-      case '(' : case ')': {
+      case '(' : case ')': case '^': {
         this.currentParseValue = this.currentChar
         this.inc()
         return true
       }
     }
+
+    this.currentParseValue = this.stream.substr(this.i, 3)
+    switch (this.currentParseValue) {
+      case 'sin': case 'cos': case 'tan': {
+        this.inc(3)
+        return true
+      }
+    }
+
     return false
   }
 
@@ -142,8 +155,8 @@ export class Parser {
     return false
   }
 
-  inc() {
-    this.i++
+  inc(step = 1) {
+    this.i += step
     if (this.i < this.stream.length) {
       this.currentChar = this.stream[this.i]
       return true
