@@ -9,7 +9,7 @@ import {Parser} from "./parser.js"
 import {Token} from "./token.js"
 import {Calculator} from "./calculator.js"
 import {Graph} from "./graph.js"
-import { Point } from "./Point.js";
+import { Point } from "./point.js";
 
 class App extends React.Component {
     constructor(props) {
@@ -55,6 +55,30 @@ class App extends React.Component {
         this.inputFuncHandleChange = this.onInputFuncHandleChange.bind(this)
         this.xMinHandleChange = this.onXMinHandleChange.bind(this)
         this.xMaxHandleChange = this.onXMaxHandleChange.bind(this)
+
+        this.defaultFuncs = [
+          '8(x+5)',
+          'x^2',
+          'x^3',
+          '1/(-x)',
+          'sin(x)',
+          'cos(x)',
+          '3*x^2*sin(x)',
+        ]
+        this.setDefaultFuncHandles = []
+        this.defaultFuncs.forEach((item, i) => {
+          this.setDefaultFuncHandles[i] = () => {
+            this.setState({inputFunc: this.defaultFuncs[i]})
+            this.rebuild(this.defaultFuncs[i], this.state.xMin, this.state.xMax)
+          }
+        })
+        this.renderButtons = () => {
+          let result = []
+          for (let i = 0; i < this.defaultFuncs.length; i++) {
+            result.push(<button key={i} onClick={this.setDefaultFuncHandles[i]}>{this.defaultFuncs[i]}</button>)
+          }
+          return result
+        }
     }
 
     onInputFuncHandleChange(event) {
@@ -107,6 +131,9 @@ class App extends React.Component {
             </label>
           </div>
           <div>
+            {this.renderButtons()}
+          </div>
+          <div>
             <label>f(x) = {this.state.explicitFunc}</label>
           </div>
           <div>
@@ -126,58 +153,4 @@ class App extends React.Component {
     }
 }
 
-
-class Grap_old extends React.Component {
-  constructor(props) {
-    super(props)
-  }
-
-  render() {
-
-    let data = []
-    for(let i = -3; i < 5; i++)
-      data.push(i * i)
-
-    const getX = d3.scaleLinear()
-  .domain([0, 30])
-  .range([0, 300]);
-
-  const getY = d3.scaleLinear()
-  .domain([0, 25])
-  .range([300, 0]);
-
-  for(let i = 0; i < data.length; i++)
-    console.log(i, getX(i), getY(data[i]))
-
-  var renderPoints = () => {
-    let result = []
-    for(let i = 0; i < data.length; i++) {
-      result.push(
-        <circle
-          key={i}
-          cx={getX(i) + 150}
-          cy={getY(data[i])}
-          r={4}
-          fill="#f00"
-        />
-      )
-      
-    }
-    return result
-  }
-    
-    return (
-      <svg width={300} height={300}>
-        {renderPoints()}
-        
-      </svg>
-    );
-  }
-}
-
 ReactDOM.render(<App/>, document.querySelector("#root"))
-// ReactDOM.render(<Grap/>, document.querySelector("#root"))
-
-
-
-
