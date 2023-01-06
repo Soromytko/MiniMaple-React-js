@@ -65,12 +65,14 @@ export class Graph extends React.Component {
 
     this.replaceInfinity()
 
+    let xNormal = Math.max(Math.abs(this.props.xData.min()), this.props.xData.max())
     const getX = d3.scaleLinear()
-      .domain([this.props.xData.min(), this.props.xData.max()])
+      .domain([-xNormal * 1.1, xNormal * 1.1])
       .range([0, 300])
 
+    let yNormal = Math.max(Math.abs(this.props.yData.min()), this.props.yData.max())
     const getY = d3.scaleLinear()
-      .domain([this.props.yData.min(), this.props.yData.max()])
+      .domain([-yNormal * 1.1, yNormal * 1.1])
       .range([300, 0])
 
     let points = new Array()
@@ -108,8 +110,8 @@ export class Graph extends React.Component {
     return (
       <svg width={300} height={300}>
         {renderPoints()}
-        <g ref={getYAxis} />
-        <g ref={getXAxis} transform={`translate(0,${getY(0)})`} />
+        <g ref={getXAxis} transform={`translate(0, 150)`} />
+        <g ref={getYAxis} transform={`translate(150, 0)`} />
         <path
           strokeWidth={3}
           fill="none"
