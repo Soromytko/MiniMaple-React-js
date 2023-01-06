@@ -91,25 +91,22 @@ export class Parser {
     }
 
     //check pairs of parentheses
-    let right = this.tokens.length - 1
-    for (let left = 0; left <= right; left++) {
-      if (this.tokens[left].lexeme == '(') {
-        let isFound = false
-        for (; right > left; right--) {
-          if (this.tokens[right].lexeme == ')') {
-            isFound = true
-            right--
-            break
-          }
-        }
-        if (!isFound) {
-          this.log += 'requires' + '\"' + ")" + '\"'
+    let leftParentheses = []
+    for (let i = 0; i < this.tokens.length; i++) {
+      let token = this.tokens[i]
+      if (token.lexeme == '(') {
+        leftParentheses.push(token.lexeme)
+      } else if (token.lexeme == ')') {
+        if (leftParentheses.length == 0) {
+          this.log += 'requires' + '\"' + "(" + '\"'
           return
         }
-      } else if (this.tokens[left].lexeme == ')') {
-        this.log += 'requires' + '\"' + "(" + '\"'
-        return
+        leftParentheses.pop()
       }
+    }
+    if (leftParentheses.length != 0) {
+      this.log += 'requires' + '\"' + ")" + '\"'
+      return
     }
   }
 
