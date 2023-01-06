@@ -9,68 +9,57 @@ import {Parser} from "./parser.js"
 import {Token} from "./token.js"
 import {Calculator} from "./calculator.js"
 import {Graph} from "./graph.js"
+import { Point } from "./Point.js";
 
 class App extends React.Component {
     constructor(props) {
         super(props)
 
         this.state = {
-          inputFunc: '3x^2 + 1',
-          explicitFunc: '3',
-          diffFunc: '6x',
+          inputFunc: '3x^2 * sin(x)',
+          explicitFunc: '3*x^2*sin(x)',
           parseResult: '',
           xMin: '-10',
           xMax: '10',
-          buttonClick: false
         };
 
-        this.xData = [-1, 0, 1]
-        this.yData = [-33, 243463, 3423]
+        this.points = []
 
-        this.renderTableData = (data) => {
-          let result = []
-          for(let i = 0; i < data.length; i++) {
-            result.push(<td key={i}>{data[i]}</td>)
+        this.rebuild(this.state.inputFunc, this.state.xMin, this.state.xMax)
+
+        this.renderTable = () => {
+          let rows = []
+          for (let i = 0; i < this.points.length; i++) {
+            rows.push(
+              <tr key={i}>
+                <td>{this.points[i].x}</td>
+                <td>{this.points[i].y}</td>
+              </tr>
+            )
           }
-          return result
+          return (
+            <table>
+              <thead>
+                <tr>
+                  <th>x</th>
+                  <th>y</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows}
+              </tbody>
+            </table>
+          )
         }
 
         this.inputFuncHandleChange = this.onInputFuncHandleChange.bind(this)
-        this.diffFuncHandleChange = this.onDiffFuncHandleChange.bind(this)
         this.xMinHandleChange = this.onXMinHandleChange.bind(this)
         this.xMaxHandleChange = this.onXMaxHandleChange.bind(this)
-
-        this.onAddHandle = this.onAdd.bind(this)
     }
 
     onInputFuncHandleChange(event) {
       this.setState({inputFunc: event.target.value})
       this.rebuild(event.target.value, this.state.xMin, this.state.xMax)
-      return
-
-      let parser = new Parser(event.target.value)
-      parser.parse()
-
-      this.setState({parseResult: parser.log})
-
-      if (!parser.log) {
-        let calculator = new Calculator(parser.tokens)
-      
-        this.xData = []
-        this.yData = []
-        for (let i = this.state.xMin; i <= this.state.xMax; i++) {
-          this.xData.push(i)
-          let y = calculator.calc(i)
-          this.yData.push(y)
-        }
-
-      }
-
-      this.setState({diffFunc: event.target.value})
-    }
-
-    onDiffFuncHandleChange(event) {
-      this.setState({diffFunc: event.target.value})
     }
 
     onXMinHandleChange(event) {
@@ -81,18 +70,6 @@ class App extends React.Component {
     onXMaxHandleChange(event) {
       this.setState({xMax: event.target.value})
       this.rebuild(this.state.inputFunc, this.state.xMin, event.target.value)
-
-
-    }
-
-    onAdd() {
-      this.setState({buttonClick: !this.state.buttonClick})
-      let parser = new Parser(this.state.inputFunc)
-      parser.parse()
-      this.setState({parseResult: parser.log})
-
-      let calculator = new Calculator(parser.tokens)
-      calculator.calc(0)
     }
 
     rebuild(func, xMin, xMax) {
@@ -106,22 +83,19 @@ class App extends React.Component {
         
         let calculator = new Calculator(parser.tokens)
       
-        this.xData = []
-        this.yData = []
+        this.points = []
         for (let i = xMin; i <= xMax; i++) {
-          this.xData.push(i)
-          let y = calculator.calc(i)
-          this.yData.push(y)
+          this.points.push(new Point(i, calculator.calc(i)))
         }
-
       }
 
       this.setState({diffFunc: func})
     }
 
     render() {
-      // this.xData = [0, 1, 2, 3, 4]
-      // this.yData = [0, 1, 4, 9, 16]
+      this.xData = []
+      this.yData = []
+      this.points.forEach(item => {this.xData.push(item.x); this.yData.push(item.y)})
       return (
         <div>
           <div>
@@ -133,34 +107,20 @@ class App extends React.Component {
             </label>
           </div>
           <div>
-            {/* <label>f'(x) = {this.state.diffFunc}</label> */}
             <label>f(x) = {this.state.explicitFunc}</label>
-            {/* <button onClick={this.onAddHandle}>
-              Добавить
-            </button> */}
           </div>
-          {/* <div>
-            <input type="number" value={this.state.from} onChange={this.}></input>
-          </div> */}
+          <div>
             <label>interval: 
               [ <input type="number" value={this.state.xMin} onChange={this.xMinHandleChange}/>, 
               <input type="number" value={this.state.xMax} onChange={this.xMaxHandleChange}/> ]
             </label>
-          <table>
-            <tbody>
-              <tr>
-                <th>x:</th>
-                {this.renderTableData(this.xData)}
-              </tr>
-              <tr>
-                <th>y:</th>
-                {this.renderTableData(this.yData)}
-              </tr>
-            </tbody>
-        </table>
-        <div>
-          <Graph xData={this.xData} yData={this.yData}></Graph>
-        </div>
+          </div>
+          <div>
+            <Graph xData={this.xData} yData={this.yData}></Graph>
+          </div>
+          <div>
+            {this.renderTable()}
+          </div> 
         </div>
       )
     }
@@ -171,8 +131,6 @@ class Grap_old extends React.Component {
   constructor(props) {
     super(props)
   }
-
-  
 
   render() {
 
