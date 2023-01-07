@@ -4,7 +4,7 @@ import ReactDOM from "react-dom";
 import {Parser} from "./parser.js"
 import {Token} from "./token.js"
 import {Calculator} from "./calculator.js"
-// import {Graph} from "./graph.js"
+import {Graph} from "./graph.js"
 import { Point } from "./point.js";
 
 class App extends React.Component {
@@ -139,7 +139,9 @@ class App extends React.Component {
             </label>
           </div>
           <div>
+            <label>Граф</label>
             <Graph xData={this.xData} yData={this.yData}></Graph>
+            <label>Граф</label>
           </div>
           <div>
             {this.renderTable()}
