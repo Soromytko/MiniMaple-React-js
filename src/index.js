@@ -1,14 +1,10 @@
-import { react } from "@babel/types";
-import { shouldInstrument } from "@jest/transform";
-import { stackOffsetSilhouette, thresholdFreedmanDiaconis, tickStep } from "d3";
 import React from "react";
 import ReactDOM from "react-dom";
-import * as d3 from "d3";
 
 import {Parser} from "./parser.js"
 import {Token} from "./token.js"
 import {Calculator} from "./calculator.js"
-import {Graph} from "./graph.js"
+// import {Graph} from "./graph.js"
 import { Point } from "./point.js";
 
 class App extends React.Component {

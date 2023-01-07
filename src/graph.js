@@ -1,6 +1,5 @@
 import React from "react";
 import * as d3 from "d3";
-import { tickStep } from "d3";
 
 Array.prototype.max = function() {
   return Math.max.apply(null, this);
@@ -33,7 +32,7 @@ Array.prototype.remove = function(value) {
   return this
 }
 
-export class Graph extends React.Component {
+export default class Graph extends React.Component {
   constructor(props) {
     super(props)
   }

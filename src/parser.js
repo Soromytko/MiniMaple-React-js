@@ -1,5 +1,3 @@
-import { thresholdFreedmanDiaconis, tickStep } from "d3"
-import { isGeneratorFunction } from "util/types"
 import {Token} from "./token"
 
 export class Parser {
