@@ -1,13 +1,13 @@
-import {useEffect, useState} from "react";
-
 import React from "react";
+import ReactDOM from "react-dom";
 
 import {Parser} from "./parser.js"
+import {Token} from "./token.js"
 import {Calculator} from "./calculator.js"
 import {Graph} from "./graph.js"
 import { Point } from "./point.js";
 
-class AppNew extends React.Component {
+class App extends React.Component {
     constructor(props) {
         super(props)
 
@@ -151,25 +151,4 @@ class AppNew extends React.Component {
     }
 }
 
-
-function App(){
-
-    // const [launches, setLaunches] = useState([]);
-    // const spacex = new SpaceX();
-    // useEffect(()=>{
-    //     spacex.launches().then(data =>{
-    //         setLaunches(data)
-    //     },[])
-    // })
-
-    return(
-        <main className='main'>
-            {/* <LaunchList launches = {launches}/> */}
-            {/* <Map/> */}
-            <AppNew></AppNew>
-            
-        </main>
-    )
-}
-
-export {App};
+ReactDOM.render(<App/>, document.querySelector("#root"))

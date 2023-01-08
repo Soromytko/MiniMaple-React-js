@@ -56,18 +56,6 @@ export class Graph extends React.Component {
         .replace(Infinity, max)
     }
   }
-
-  getXF(normal) {
-    return d3.scaleLinear()
-      .domain([-normal * 1.1, normal * 1.1])
-      .range([0, 300])
-  }
-
-  getYF(noraml) {
-    return d3.scaleLinear()
-    .domain([-noraml * 1.1, noraml * 1.1])
-    .range([300, 0])
-  }
     
   render() {
 
@@ -77,14 +65,14 @@ export class Graph extends React.Component {
     this.replaceInfinity()
 
     let xNormal = Math.max(Math.abs(this.props.xData.min()), this.props.xData.max())
-    // const getX = d3.scaleLinear()
-    //   .domain([-xNormal * 1.1, xNormal * 1.1])
-    //   .range([0, 300])
+    let getX = d3.scaleLinear()
+      .domain([-xNormal * 1.1, xNormal * 1.1])
+      .range([0, 300])
 
-    // let yNormal = Math.max(Math.abs(this.props.yData.min()), this.props.yData.max())
-    // const getY = d3.scaleLinear()
-    //   .domain([-yNormal * 1.1, yNormal * 1.1])
-    //   .range([300, 0])
+    let yNormal = Math.max(Math.abs(this.props.yData.min()), this.props.yData.max())
+    const getY = d3.scaleLinear()
+      .domain([-yNormal * 1.1, yNormal * 1.1])
+      .range([300, 0])
 
     let points = new Array()
     for (let i = 0; i < this.props.xData.length; i++) {
@@ -93,17 +81,17 @@ export class Graph extends React.Component {
     const line = d3.line()
     const linePath = line(points);
 
-    // const getXAxis = ref => {
-    //   const xAxis = d3.axisBottom(getX);
-    //   d3.select(ref).call(xAxis);
-    // };
+    console.log("NEW import from http")
 
-    // const getYAxis = ref => {
-    //   const yAxis = d3.axisLeft(getY);
-    //   d3.select(ref).call(yAxis);
-    // };
+    const getXAxis = ref => {
+      const xAxis = d3.axisBottom(getX);
+      d3.select(ref).call(xAxis);
+    };
 
-    
+    const getYAxis = ref => {
+      const yAxis = d3.axisLeft(getY);
+      d3.select(ref).call(yAxis);
+    };
     
     var renderPoints = () => {
       let result = []
@@ -120,17 +108,12 @@ export class Graph extends React.Component {
       return result
     }
 
-    // const xAxis = d3.axisBottom(getX)
-    // const yAxis = d3.axisLeft(getY)
-
-    // d3.select('#xAxis').call(xAxis)
-    // d3.select('#yAxis').call(yAxis)
-
     return (
+      // <div></div>
       <svg width={300} height={300}>
         {renderPoints()}
-        {/* <g id="xAxis" transform={`translate(0, 150)`} /> */}
-        {/* <g id="yAxis" transform={`translate(150, 0)`} /> */}
+        <g ref={getXAxis} transform={`translate(0, 150)`} />
+        <g ref={getYAxis} transform={`translate(150, 0)`} />
         <path
           strokeWidth={3}
           fill="none"
@@ -138,6 +121,6 @@ export class Graph extends React.Component {
           d={linePath}
         />
       </svg>
-      );
+      )
     }
   }
